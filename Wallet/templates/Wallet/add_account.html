@@ -1,15 +1,22 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="flex justify-center items-center min-h-screen bg-gray-100">
-    <form method="post" class="bg-white p-8 rounded shadow-sm w-full max-w-md">
-        {% csrf_token %}
-        {{ account_form.as_p }}
-        <div class="mt-4 flex justify-end">
-            <button type="submit" class="bg-blue-500 text-black px-4 py-2 rounded hover:bg-blue-600">
-                Submit
-            </button>
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Add account</h2>
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card p-4 shadow-sm">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            {{ account_form.as_p }}
+                        </div>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </form>
+                </div>
+            </div>
         </div>
-    </form>
+    </div>
 </div>
-{% endblock %}
+{% endblock content %}
