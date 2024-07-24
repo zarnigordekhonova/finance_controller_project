@@ -4,7 +4,7 @@ from django.conf import settings
 
 class Accounts(models.Model):
     name = models.CharField(max_length=32, blank=True, null=True)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=False)
     balance = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
 
 

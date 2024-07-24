@@ -1,13 +1,23 @@
 {% extends 'base.html' %}
 
 {% block content %}
-{% if user.is_authenticated %}
-    <h1> Welcome to your e-Wallet.</h1>
-    <a href="{% url 'wallet:incomes' %}">Go to check out my incomes</a><br>
-    <a href="{% url 'wallet:expenditures' %}">Got to check out my expenses</a>
-{% else %}
-    <h1> Welcome to your e-Wallet.</h1>
-{% endif %}
-
+<div class="container mt-5 text-center">
+    <h1 class="display-4 mb-4">Welcome to your e-Wallet</h1>
+    {% if user.is_authenticated %}
+        <div class="d-flex flex-column align-items-center">
+            <a href="{% url 'wallet:incomes' %}" class="btn btn-primary btn-lg mb-3">
+                <i class="fas fa-wallet"></i> Check Out My Incomes
+            </a>
+            <a href="{% url 'wallet:expenditures' %}" class="btn btn-secondary btn-lg">
+                <i class="fas fa-money-bill-wave"></i> Check Out My Expenses
+            </a>
+        </div>
+    {% else %}
+        <p class="lead">Please log in to access your e-Wallet features.</p>
+    {% endif %}
+</div>
 {% endblock content %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+{% endblock extra_head %}

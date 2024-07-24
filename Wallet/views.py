@@ -262,6 +262,7 @@ class AddAccountView(LoginRequiredMixin, View):
         account_form = AddAccountForm(data=request.POST)
         if account_form.is_valid():
             account = account_form.save(commit=False)
+            account.user = request.user
             account.save()
             return redirect('wallet:accounts_list')
         else:
@@ -286,26 +287,27 @@ class DeleteAccount(LoginRequiredMixin, View):
 
 class EditAccountView(View):
     def get(self, request, pk):
-        accounts = get_object_or_404(Accounts, pk=pk)
-        account_form = EditAccountForm(instance=accounts)
+        account = get_object_or_404(Accounts, pk=pk)
+        account_form = EditAccountForm(instance=account)
 
         context = {
-            'accounts': accounts,
+            'account': account,
             'account_form': account_form
         }
         return render(request, 'Wallet/edit_account.html', context=context)
 
     def post(self, request, pk):
-        accounts = get_object_or_404(Accounts, pk=pk)
-        account_form = EditAccountForm(data=request.POST, instance=accounts)
+        account = get_object_or_404(Accounts, pk=pk)
+        account_form = EditAccountForm(data=request.POST, instance=account)
         if account_form.is_valid():
-            account_form.save()
+            account = account_form.save(commit=False)
+            account.user = request.user
+            account.save()
             messages.success(request, 'Your account data has been updated successfully.')
             return redirect('wallet:accounts_list')
         else:
             context = {
-                'accounts': accounts,
+                'account': account,
                 'account_form': account_form
             }
             return render(request, 'Wallet/edit_account.html', context=context)
-

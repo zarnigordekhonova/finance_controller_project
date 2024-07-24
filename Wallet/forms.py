@@ -43,7 +43,7 @@ class EditExpenditureForm(forms.ModelForm):
 class AddAccountForm(forms.ModelForm):
     class Meta:
         model = Accounts
-        fields = ['name', 'balance']
+        exclude = ['user']
 
 
 class EditAccountForm(forms.ModelForm):
