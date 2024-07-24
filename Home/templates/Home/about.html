@@ -1,0 +1,59 @@
+{% extends 'base.html' %}
+{% block title %}
+  About Us
+{% endblock %}
+
+{% block content %}
+<div class="about-container max-w-4xl mx-auto p-6">
+    <h1 class="text-4xl font-bold text-center mb-8">About Us</h1>
+    <p class="text-lg mb-6">
+        Welcome to <strong>Finance Controller</strong>, your ultimate tool for managing and controlling your finances with ease and efficiency. Our mission is to empower you to take full control of your financial life by providing a seamless and intuitive platform to track, manage, and optimize your income and expenses.
+    </p>
+
+    <h2 class="text-2xl font-semibold mb-4">Our Vision</h2>
+    <p class="text-lg mb-6">
+        We believe that financial literacy and management should be accessible to everyone. Our vision is to create a world where individuals are empowered with the tools and knowledge they need to make informed financial decisions, ensuring a stable and prosperous future.
+    </p>
+
+    <h2 class="text-2xl font-semibold mb-4">What We Offer</h2>
+    <ul class="list-disc list-inside mb-6">
+        <li class="text-lg mb-2"><strong>Track Income and Expenses:</strong> Easily add and categorize your income and expenses. Our platform allows you to keep a detailed record of all your financial transactions.</li>
+        <li class="text-lg mb-2"><strong>Edit and Manage Transactions:</strong> Made a mistake or need to update a transaction? No problem. You can edit entries to keep your records accurate.</li>
+        <li class="text-lg mb-2"><strong>Sort by Date:</strong> View your financial history by sorting your transactions according to their date. This helps you analyze your spending and income patterns over time.</li>
+        <li class="text-lg mb-2"><strong>Currency Management:</strong> Traveling or dealing with multiple currencies? Our currency management feature allows you to change and manage your money in different currencies seamlessly.</li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mb-4">Why Choose Us?</h2>
+    <ul class="list-disc list-inside mb-6">
+        <li class="text-lg mb-2"><strong>User-Friendly Interface:</strong> Our platform is designed with simplicity and usability in mind, making it easy for you to navigate and manage your finances efficiently.</li>
+        <li class="text-lg mb-2"><strong>Comprehensive Reports:</strong> Gain insights into your financial habits with our detailed reports and analytics. Understand where your money is going and how you can optimize your spending.</li>
+        <li class="text-lg mb-2"><strong>Security and Privacy:</strong> We prioritize the security and privacy of your financial data. Our robust security measures ensure that your information is protected at all times.</li>
+        <li class="text-lg mb-2"><strong>Support and Assistance:</strong> Our dedicated support team is always here to help. Whether you have questions, need assistance, or want to provide feedback, we are just a message away.</li>
+    </ul>
+
+    <h2 class="text-2xl font-semibold mb-4">Join Us</h2>
+    <p class="text-lg mb-6">
+        Take the first step towards financial empowerment with <strong>Finance Controller</strong>. Join our community of savvy savers and smart spenders today, and experience the ease of managing your money like never before.
+    </p>
+</div>
+{% endblock %}
+
+{% block extra_head %}
+<style>
+    .about-container {
+        font-family: "Times New Roman", Times, serif;
+    }
+    .about-container h1,
+    .about-container h2,
+    .about-container p,
+    .about-container ul {
+        margin-bottom: 1rem;
+    }
+    .about-container ul {
+        padding-left: 1rem;
+    }
+    .about-container li {
+        margin-bottom: 0.5rem;
+    }
+</style>
+{% endblock %}

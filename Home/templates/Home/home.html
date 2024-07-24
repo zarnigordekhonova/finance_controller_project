@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% if user.is_authenticated %}
+    <h1> Welcome to your e-Wallet.</h1>
+    <a href="{% url 'wallet:incomes' %}">Go to check out my incomes</a><br>
+    <a href="{% url 'wallet:expenditures' %}">Got to check out my expenses</a>
+{% else %}
+    <h1> Welcome to your e-Wallet.</h1>
+{% endif %}
+
+{% endblock content %}
+

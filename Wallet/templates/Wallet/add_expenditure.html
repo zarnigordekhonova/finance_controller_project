@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2 class="text-center mb-4">Add Expenditure</h2>
+    <form method="post" class="bg-white p-4 rounded shadow-sm">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_expenditure_type" class="font-weight-bold">Expenditure Type</label>
+        <select id="id_expenditure_type" name="expenditure_type" class="form-control">
+          {% for choice in expenditure_form.fields.expenditure_type.queryset %}
+            <option value="{{ choice.id }}" {% if choice.id == expenditure_form.data.expenditure_type %}selected{% endif %}>
+              {{ choice }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="account_type_id" class="font-weight-bold">Account Type</label>
+        <select id="account_type_id" name="account_type" class="form-control">
+          {% for choice in expenditure_form.fields.account_type.queryset %}
+            <option value="{{ choice.id }}" {% if choice.id == expenditure_form.data.account_type %}selected{% endif %}>
+              {{ choice }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="id_amount" class="font-weight-bold">Amount</label>
+        <input type="number" id="id_amount" name="amount" class="form-control" value="{{ expenditure_form.data.amount }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_date" class="font-weight-bold">Date</label>
+        <div class="d-flex">
+          <input type="date" id="id_date" name="date" class="form-control" value="{{ expenditure_form.data.date }}" required max="{{ today_date }}">
+          <button type="button" class="btn btn-secondary ml-2" onclick="setDateToToday()">Set to Today</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="id_description" class="font-weight-bold">Description</label>
+        <textarea id="id_description" name="description" class="form-control">{{ expenditure_form.data.description }}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary btn-block">Add Expenditure</button>
+    </form>
+  </div>
+
+  <script>
+    function setDateToToday() {
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('id_date').value = today;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('id_date').setAttribute('max', today);
+    });
+  </script>
+{% endblock %}

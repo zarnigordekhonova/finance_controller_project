@@ -1,0 +1,178 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div class="text-center mb-4">
+        <h5 class="text-4xl font-bold mt-2 inline-flex items-center">
+            Total: <span id="totalAmount">{{ total_sum }}</span>
+            <span class="cursor-pointer ml-2" id="toggleArrow">
+                <i class="fas fa-exchange-alt"></i>
+            </span>
+        </h5>
+
+        <div class="collapse mt-2" id="collapseIncome">
+            <div class="card card-body p-2">
+                <p class="cursor-pointer" data-currency="USD">USD</p>
+                <p class="cursor-pointer" data-currency="EUR">EUR</p>
+                <p class="cursor-pointer" data-currency="GBP">GBP</p>
+                <p class="cursor-pointer" data-currency="AUD">AUD</p>
+                <p class="cursor-pointer" data-currency="CAD">CAD</p>
+                <p class="cursor-pointer" data-currency="CHF">CHF</p>
+                <p class="cursor-pointer" data-currency="CNY">CNY</p>
+                <p class="cursor-pointer" data-currency="JPY">JPY</p>
+                <p class="cursor-pointer" data-currency="RUB">RUB</p>
+                <p class="cursor-pointer" data-currency="INR">INR</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .center-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .expenditures-btn {
+            color: black;
+            text-decoration: none;
+        }
+        .expenditures-btn::after {
+            content: " \25BC";
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        .description-container {
+            position: relative;
+            padding-right: 40px; /* Space for the icon */
+        }
+        .edit-icon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            cursor: pointer;
+            color: black;
+            display: none;
+        }
+        .description-container:hover .edit-icon,
+        .description-container:focus-within .edit-icon {
+            display: inline;
+        }
+    </style>
+
+    <div class="center-text mb-4">
+        <form method="GET" action="">
+            <div class="flex items-center space-x-4">
+                <label for="date" class="text-xl font-medium">Select Date:</label>
+                <input type="date" id="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" class="border p-2 rounded">
+
+                <label for="period" class="text-xl font-medium">Period:</label>
+                <select id="period" name="period" class="border p-2 rounded">
+                    <option value="daily" {% if filter_period == 'daily' %}selected{% endif %}>Daily</option>
+                    <option value="weekly" {% if filter_period == 'weekly' %}selected{% endif %}>Weekly</option>
+                    <option value="monthly" {% if filter_period == 'monthly' %}selected{% endif %}>Monthly</option>
+                </select>
+
+                <button type="submit" class="bg-blue-500 text-black p-2 rounded">Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="center-text">
+        <div class="text-center">
+            <h4 class="btn btn-link expenditures-btn" role="button" data-toggle="collapse" data-target="#expendituresMenu" aria-expanded="false" aria-controls="expendituresMenu">
+                Expenditures
+            </h4>
+
+            <div class="collapse" id="expendituresMenu">
+                <a class="dropdown-item" href="{% url 'wallet:add_expenditure' %}">Add Expense</a>
+            </div>
+        </div>
+    </div>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th class="border border-gray-400 px-4 py-2">Account Type</th>
+                <th class="border border-gray-400 px-4 py-2">Expenditure Type</th>
+                <th class="border border-gray-400 px-4 py-2">Amount</th>
+                <th class="border border-gray-400 px-4 py-2">Date</th>
+                <th class="border border-gray-400 px-4 py-2">Description</th>
+                <th class="border border-gray-400 px-4 py-2">Sum</th>
+                <th class="border border-gray-400 px-4 py-2">Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for expenditure in filtered_expenditures %}
+            <tr>
+                <td class="border border-gray-400 px-4 py-2">{{ expenditure.account_type.name }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ expenditure.expenditure_type.expenditure_name }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ expenditure.amount }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ expenditure.date }}</td>
+                <td class="border border-gray-400 px-4 py-2 description-container">
+                    {{ expenditure.description }}
+                    <a href="{% url 'wallet:edit_expenditure' expenditure.pk %}">
+                        <span class="material-icons edit-icon">edit</span>
+                    </a>
+                </td>
+                {% if forloop.first %}
+                <td rowspan="{{ filtered_expenditures|length }}" class="border border-gray-400 px-4 py-2">{{ expenditure_sum }}</td>
+                <td class="border border-gray-400 px-4 py-2" rowspan="{{ expenditure_type_percentages|length }}">
+                    {% for expenditure_type, details in expenditure_type_percentages.items %}
+                        <div>{{ expenditure_type }} - {{ details.percentage|floatformat:2 }}% ({{ details.amount }})</div>
+                    {% endfor %}
+                </td>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="border border-gray-400 px-4 py-2 text-center">No expenditures found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var toggleArrow = document.getElementById('toggleArrow');
+    var collapseIncome = document.getElementById('collapseIncome');
+    var totalAmount = document.getElementById('totalAmount');
+    var originalAmount = parseFloat(totalAmount.textContent.replace('UZS', '').trim());
+    var currentCurrency = 'UZS';
+
+    var exchangeRates = {
+      USD: 16.30 / 205000,
+      EUR: 14.96 / 205000,
+      GBP: 12.61 / 205000,
+      AUD: 24.54 / 205000,
+      CAD: 22.42 / 205000,
+      CHF: 14.48 / 205000,
+      CNY: 118.39 / 205000,
+      JPY: 2560 / 205000,
+      RUB: 1458.61 / 205000,
+      INR: 1363.39 / 205000,
+    };
+
+    toggleArrow.addEventListener('click', function() {
+      collapseIncome.classList.toggle('show');
+    });
+
+    document.querySelectorAll('#collapseIncome p').forEach(function(element) {
+      element.addEventListener('click', function() {
+        var selectedCurrency = this.getAttribute('data-currency');
+        var convertedAmount = (originalAmount * exchangeRates[selectedCurrency]).toFixed(2);
+        totalAmount.textContent = convertedAmount + ' ' + selectedCurrency;
+        currentCurrency = selectedCurrency;
+        collapseIncome.classList.remove('show');
+        toggleArrow.innerHTML = '<i class="fas fa-exchange-alt"></i>';
+      });
+    });
+
+    totalAmount.textContent = originalAmount.toFixed(2) + ' UZS';
+  });
+</script>
+{% endblock %}

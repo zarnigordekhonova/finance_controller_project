@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+  <div class="container mt-4">
+    <h2>Add Income</h2>
+    <form method="post">
+      {% csrf_token %}
+
+      <div class="form-group">
+        <label for="id_income_type">Income Type</label>
+        <select id="id_income_type" name="income_type" class="form-control">
+          {% for choice in income_form.fields.income_type.queryset %}
+            <option value="{{ choice.id }}" {% if choice.id == income_form.data.income_type %}selected{% endif %}>
+              {{ choice }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="account_type_id">Account Type</label>
+        <select id="account_type_id" name="account_type" class="form-control">
+          {% for choice in income_form.fields.account_type.queryset %}
+            <option value="{{ choice.id }}" {% if choice.id == income_form.data.account_type %}selected{% endif %}>
+              {{ choice }}
+            </option>
+          {% endfor %}
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="id_amount">Amount</label>
+        <input type="number" id="id_amount" name="amount" class="form-control" value="{{ income_form.data.amount }}" required>
+      </div>
+
+      <div class="form-group">
+        <label for="id_date">Date</label>
+        <input type="date" id="id_date" name="date" class="form-control" value="{{ income_form.data.date }}" required max="{{ today_date }}">
+        <button type="button" class="btn btn-secondary" onclick="setDateToToday()">Set to Today</button>
+      </div>
+
+      <div class="form-group">
+        <label for="id_description">Description</label>
+        <textarea id="id_description" name="description" class="form-control">{{ income_form.data.description }}</textarea>
+      </div>
+
+      <button type="submit" class="btn btn-primary">Add Income</button>
+    </form>
+  </div>
+
+  <script>
+    function setDateToToday() {
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('id_date').value = today;
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+      var today = new Date().toISOString().split('T')[0];
+      document.getElementById('id_date').setAttribute('max', today);
+    });
+  </script>
+{% endblock %}

@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+    <div class="text-center mb-4">
+        <h5 class="text-4xl font-bold mt-2 inline-flex items-center">
+            Total: <span id="totalAmount">{{ total_sum }}</span>
+            <span class="cursor-pointer ml-2" id="toggleArrow">
+                <i class="fas fa-exchange-alt"></i>
+            </span>
+        </h5>
+
+        <div class="collapse mt-2" id="collapseIncome">
+            <div class="card card-body p-2">
+                <p class="cursor-pointer" data-currency="USD">USD</p>
+                <p class="cursor-pointer" data-currency="EUR">EUR</p>
+                <p class="cursor-pointer" data-currency="GBP">GBP</p>
+                <p class="cursor-pointer" data-currency="AUD">AUD</p>
+                <p class="cursor-pointer" data-currency="CAD">CAD</p>
+                <p class="cursor-pointer" data-currency="CHF">CHF</p>
+                <p class="cursor-pointer" data-currency="CNY">CNY</p>
+                <p class="cursor-pointer" data-currency="JPY">JPY</p>
+                <p class="cursor-pointer" data-currency="RUB">RUB</p>
+                <p class="cursor-pointer" data-currency="INR">INR</p>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .center-text {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .incomes-btn {
+            color: black;
+            text-decoration: none;
+        }
+        .incomes-btn::after {
+            content: " \25BC";
+            font-size: 0.8em;
+            margin-left: 5px;
+        }
+        .edit-icon {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2em;
+            cursor: pointer;
+            color: black;
+            display: none;
+        }
+
+        .description-container:hover .edit-icon,
+        .description-container:focus-within .edit-icon {
+            display: inline;
+        }
+        .description-container {
+            position: relative;
+        }
+    </style>
+
+    <div class="center-text mb-4">
+        <form method="GET" action="">
+            <div class="flex items-center space-x-4">
+                <label for="date" class="text-xl font-medium">Select Date:</label>
+                <input type="date" id="date" name="date" value="{{ selected_date|date:'Y-m-d' }}" class="border p-2 rounded">
+
+                <label for="period" class="text-xl font-medium">Period:</label>
+                <select id="period" name="period" class="border p-2 rounded">
+                    <option value="daily" {% if filter_period == 'daily' %}selected{% endif %}>Daily</option>
+                    <option value="weekly" {% if filter_period == 'weekly' %}selected{% endif %}>Weekly</option>
+                    <option value="monthly" {% if filter_period == 'monthly' %}selected{% endif %}>Monthly</option>
+                </select>
+
+                <button type="submit" class="bg-blue-500 text-black p-2 rounded">Filter</button>
+            </div>
+        </form>
+    </div>
+
+    <div class="center-text">
+        <div class="text-center">
+            <h4 class="btn btn-link incomes-btn" role="button" data-toggle="collapse" data-target="#incomesMenu" aria-expanded="false" aria-controls="incomesMenu">
+                Incomes
+            </h4>
+
+            <div class="collapse" id="incomesMenu">
+                <a class="dropdown-item" href="{% url 'wallet:add_income' %}">Add Income</a>
+            </div>
+        </div>
+    </div>
+
+    <table class="table mt-4">
+        <thead>
+            <tr>
+                <th class="border border-gray-400 px-4 py-2">Account Type</th>
+                <th class="border border-gray-400 px-4 py-2">Income Type</th>
+                <th class="border border-gray-400 px-4 py-2">Amount</th>
+                <th class="border border-gray-400 px-4 py-2">Date</th>
+                <th class="border border-gray-400 px-4 py-2">Description</th>
+                <th class="border border-gray-400 px-4 py-2">Sum</th>
+                <th class="border border-gray-400 px-4 py-2">Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for income in filtered_incomes %}
+            <tr>
+                <td class="border border-gray-400 px-4 py-2">{{ income.account_type.name }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ income.income_type.income_name }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ income.amount }}</td>
+                <td class="border border-gray-400 px-4 py-2">{{ income.date }}</td>
+                <td class="border border-gray-400 px-4 py-2 description-container">
+                    {{ income.description }}
+                    <a href="{% url 'wallet:edit_incomes' income.pk %}">
+                        <span class="material-icons edit-icon">edit</span>
+                    </a>
+                </td>
+                {% if forloop.first %}
+                <td class="border border-gray-400 px-4 py-2" rowspan="{{ filtered_incomes|length }}">{{ income_sum }}</td>
+                <td class="border border-gray-400 px-4 py-2" rowspan="{{ income_type_percentages|length }}">
+                    {% for income_type, details in income_type_percentages.items %}
+                        <div>{{ income_type }} - {{ details.percentage|floatformat:2 }}% ({{ details.amount }})</div>
+                    {% endfor %}
+                </td>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="7" class="border border-gray-400 px-4 py-2 text-center">No incomes found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var toggleArrow = document.getElementById('toggleArrow');
+    var collapseIncome = document.getElementById('collapseIncome');
+    var collapse = new bootstrap.Collapse(collapseIncome, {
+        toggle: false
+    });
+
+    toggleArrow.addEventListener('click', function() {
+        collapse.toggle();
+    });
+
+    document.querySelectorAll('.currency-options p').forEach(function(element) {
+        element.addEventListener('click', function() {
+            var selectedCurrency = this.getAttribute('data-currency');
+            alert('Selected currency: ' + selectedCurrency);
+        });
+    });
+  });
+</script>
+{% endblock %}
