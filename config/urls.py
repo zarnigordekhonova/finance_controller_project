@@ -26,7 +26,7 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    path('admin/', admin.site.urls),
+    path('finance_controller/', admin.site.urls),
     path('grappelli/', include('grappelli.urls')),
     path('', include('Home.urls')),
     path('users/', include('Users.urls')),
